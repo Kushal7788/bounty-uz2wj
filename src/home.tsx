@@ -1,10 +1,9 @@
-import { useState } from 'react';
-import { useAccount, useContractWrite, useWaitForTransaction } from 'wagmi';
+import React, { useState } from 'react';
+import { useAccount, useWriteContract, useTransaction } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { parseEther } from 'viem';
-import { Contract } from 'ethers';
+import TimeLockedMessageABI from '../contracts/TimeLockedMessage.json';
 
-const CONTRACT_ADDRESS = 'YOUR_DEPLOYED_CONTRACT_ADDRESS';
+const CONTRACT_ADDRESS = '0x99772A7bF122e2D0EeE3D2d4C9635B6Eedbdb3de';
 
 export default function Home() {
   const [message, setMessage] = useState('');
@@ -13,23 +12,26 @@ export default function Home() {
   
   const { address } = useAccount();
   
-  const { write, data } = useContractWrite({
-    address: CONTRACT_ADDRESS as `0x${string}`,
-    abi: TimeLockedMessageABI,
-    functionName: 'storeMessage',
-  });
+  const { writeContract, data: hash } = useWriteContract();
   
-  const { isLoading, isSuccess } = useWaitForTransaction({
-    hash: data?.hash,
+  const { isLoading, isSuccess } = useTransaction({
+    hash: hash,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!message || !recipient || !unlockDelay) return;
     
-    write({
-      args: [message, recipient, BigInt(Number(unlockDelay) * 3600)],
-    });
+    try {
+      writeContract({
+        address: CONTRACT_ADDRESS,
+        abi: TimeLockedMessageABI,
+        functionName: 'storeMessage',
+        args: [message, recipient, BigInt(Number(unlockDelay) * 3600)],
+      });
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
   };
 
   return (
@@ -68,6 +70,12 @@ export default function Home() {
         >
           {isLoading ? 'Sending...' : 'Send Message'}
         </button>
+        
+        {isSuccess && (
+          <div className="mt-4 p-2 bg-green-100 text-green-700 rounded">
+            Message sent successfully!
+          </div>
+        )}
       </form>
     </div>
   );

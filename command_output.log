@@ -1,1 +1,27 @@
 
+Command: shopt -s histappend
+Output:
+
+Exit Code: 0
+----
+Command: ls
+Output:
+command_output.log
+contracts
+hardhat.config.ts
+src
+Exit Code: 0
+----
+Command: npm i
+Output:
+npm ERR! code ENOENT
+npm ERR! syscall open
+npm ERR! path /Users/kushalshah/devdockDir/bounty-uz2wj/package.json
+npm ERR! errno -2
+npm ERR! enoent ENOENT: no such file or directory, open '/Users/kushalshah/devdockDir/bounty-uz2wj/package.json'
+npm ERR! enoent This is related to npm not being able to find a file.
+npm ERR! enoent 
+
+npm ERR! A complete log of this run can be found in: /Users/kushalshah/.npm/_logs/2024-12-03T13_39_14_256Z-debug-0.log
+Exit Code: 254
+----
